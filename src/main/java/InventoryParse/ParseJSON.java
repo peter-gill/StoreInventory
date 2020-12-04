@@ -1,31 +1,49 @@
 package InventoryParse;
+
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class ParseJSON {
 
-	private String inputFolder = null;
+	final static public int VALID_FILE = 0;
+	final static public int RECORD_COUNT_MISMATCH = 1;
+	final static public int QTY_COUNT_MISMATCH = 2;
+	final static public int PREVIOUSLY_PROCESSED = 5;
 
-	public ParseJSON(String folderName) {
-		inputFolder = folderName;
+	private File inputFolder = null;
+
+	public ParseJSON() {
+
 	}
 
-	public void findParseJSON() {
+	public ParseJSON(String folderNameStr) throws Exception {
+
+		inputFolder = new File(folderNameStr);
+
+		if (inputFolder == null || !inputFolder.exists() || !inputFolder.isDirectory()) {
+
+			throw new Exception("Invalid input folder");
+		}
+	}
+
+	public void findParseJSON() throws Exception {
 
 		for (;;) {
 
-			String fileName = findFile();
+			File absoluteFileName = findFile();
 
-			if (fileName != null) {
+			if (absoluteFileName != null) {
 
-				validateJSON(fileName);
+				validateJSON(absoluteFileName);
 
-				moveFile(fileName);
+				moveFile(absoluteFileName);
 
 			} else {
 
@@ -41,124 +59,119 @@ public class ParseJSON {
 
 	}
 
-	private String findFile() {
+	/*
+	 * Returns a file or null if no file exists
+	 */
+	private File findFile() throws Exception {
 
-		String fileName = null;
+		File absoluteFileName = null;
 
-		File folder = new File(inputFolder);
+		for (final File fileEntry : inputFolder.listFiles()) {
 
-		for (final File fileEntry : folder.listFiles()) {
+			absoluteFileName = fileEntry.getAbsoluteFile();
 
-			fileName = fileEntry.getName();
-			System.out.println("File found: " + fileName);
+			if (absoluteFileName == null || !absoluteFileName.isFile()) {
+				throw new Exception("Invalid file found, please check input folder");
+			}
+
+			System.out.println("File found: " + absoluteFileName.toString());
 			break;
 
 		}
 
-		return fileName;
-
+		return absoluteFileName;
 	}
 
-	private boolean validateJSON(String fileName) {
+	/*
+	 * Returns true if file is valid TODO: distinguish based on discard reason
+	 */
+	int validateJSON(File absoluteFileName) throws IOException, ParseException {
 
-		boolean discard = false;
+		int fileValidatyStatus = VALID_FILE;
 
-		try {
+		FileReader fileReader = new FileReader(absoluteFileName);
 
-			FileReader fileReader = new FileReader(inputFolder + "\\" + fileName);
+		// parsing file "drop-n.json"
+		Object obj = new JSONParser().parse(fileReader);
 
-			// parsing file "drop-n.json"
-			Object obj = new JSONParser().parse(fileReader);
+		// TODO: add function to validate JSON format
 
-			// TODO: add function to validate JSON format
+		JSONObject jo = (JSONObject) obj;
 
-			JSONObject jo = (JSONObject) obj;
+		JSONArray productsArray = (JSONArray) jo.get("products");
 
-			JSONArray productsArray = (JSONArray) jo.get("products");
+		Long totalRecordcount = 0L;
+		Long totalQtysum = 0L;
 
-			Long totalRecordcount = 0L;
-			Long totalQtysum = 0L;
+		for (int i = 0, size = productsArray.size(); i < size; i++) {
 
-			for (int i = 0, size = productsArray.size(); i < size; i++) {
+			JSONObject objectInArray = (JSONObject) productsArray.get(i);
 
-				JSONObject objectInArray = (JSONObject) productsArray.get(i);
+			String sku = (String) objectInArray.get("sku");
+			String description = (String) objectInArray.get("description");
+			String category = (String) objectInArray.get("category");
+			Double price = ((Number) objectInArray.get("price")).doubleValue();
+			String location = (String) objectInArray.get("location");
+			Long qty = (Long) objectInArray.get("qty");
 
-				String sku = (String) objectInArray.get("sku");
-				String description = (String) objectInArray.get("description");
-				String category = (String) objectInArray.get("category");
-				Double price = ((Number) objectInArray.get("price")).doubleValue();
-				String location = (String) objectInArray.get("location");
-				Long qty = (Long) objectInArray.get("qty");
-
-				totalRecordcount += 1;
-				totalQtysum += qty;
-
-			}
-
-			JSONObject transSum = (JSONObject) jo.get("transmissionsummary");
-			String id = (String) transSum.get("id");
-			Long transSumRecordcount = (Long) transSum.get("recordcount");
-			Long transSumQtysum = (Long) transSum.get("qtysum");
-
-			if (totalRecordcount.longValue() == transSumRecordcount.longValue()
-					|| totalQtysum.longValue() == transSumQtysum) {
-
-				System.out.println("Valid record");
-
-			} else {
-
-				System.out.println("Invalid record");
-
-				discard = true;
-
-			}
-
-			fileReader.close();
-
-			return discard;
+			totalRecordcount += 1;
+			totalQtysum += qty;
 
 		}
 
-		catch (Exception e) {
-			System.out.println(e.toString());
-			return true;
+		JSONObject transSum = (JSONObject) jo.get("transmissionsummary");
+		String id = (String) transSum.get("id");
+		Long transSumRecordcount = (Long) transSum.get("recordcount");
+		Long transSumQtysum = (Long) transSum.get("qtysum");
+
+		if (totalRecordcount.longValue() != transSumRecordcount.longValue()) {
+
+			fileValidatyStatus += RECORD_COUNT_MISMATCH;
+
 		}
+
+		if (totalQtysum.longValue() != transSumQtysum) {
+
+			fileValidatyStatus += QTY_COUNT_MISMATCH;
+
+		}
+
+		fileReader.close();
+
+		return fileValidatyStatus;
 
 	}
 
-	private void moveFile(String fileNameStr) {
+	/*
+	 * Moves JSON from input directory to processed directory
+	 */
+	private void moveFile(File absoluteFileName) {
 
-		File fileName = new File(fileNameStr);
-		File parentFolder = (new File(inputFolder)).getParentFile();
+		File parentFolder = (absoluteFileName.getParentFile());
 
-		if (parentFolder.exists()) {
+		String processedFolderStr = parentFolder.toString() + "/processed-folder";
 
-			String processedFolderStr = parentFolder.toString() + "/processed-folder";
+		File processedFolder = new File(processedFolderStr);
 
-			File processedFolder = new File(processedFolderStr);
+		if (!processedFolder.exists()) {
 
-			if (!processedFolder.exists()) {
+			processedFolder.mkdir();
 
-				processedFolder.mkdir();
+		}
 
-			}
+		String fileNameStr = absoluteFileName.getName();
 
-			fileName = new File(inputFolder + "/" + fileNameStr);
-			fileNameStr = new File(inputFolder + "/" + fileNameStr).toString();
+		String destinationFileStr = processedFolderStr + "/" + fileNameStr;
+		File destinationFile = new File(destinationFileStr);
+		destinationFileStr = destinationFile.toString();
 
-			String destinationFileStr = processedFolderStr + "/" + fileName.getName();
-			File destinationFile = new File(destinationFileStr);
-			destinationFileStr = destinationFile.toString();
+		System.out.println("Source: " + absoluteFileName.toString());
+		System.out.println("Destination: " + destinationFileStr);
 
-			System.out.println("Source: " + fileName.toString());
-			System.out.println("Destination: " + destinationFileStr);
-
-			if (fileName.renameTo(new File(destinationFileStr)) && fileName.delete()) {
-				System.out.println("Moved to Processed Directory");
-			} else {
-				System.out.println("Unable to move to Processed Directory");
-			}
-
+		if (absoluteFileName.renameTo(new File(destinationFileStr)) && absoluteFileName.delete()) {
+			System.out.println("Moved to Processed Directory");
+		} else {
+			System.out.println("Unable to move to Processed Directory");
 		}
 
 	}
