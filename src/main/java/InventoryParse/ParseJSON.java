@@ -177,6 +177,8 @@ public class ParseJSON {
 
 		if (fileValidatyStatus != PREVIOUSLY_PROCESSED) {
 
+			System.out.println("Completed " + absoluteFileName.getName());
+
 			printAggregateStats();
 						
 		}
