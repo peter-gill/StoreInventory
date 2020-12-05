@@ -180,7 +180,12 @@ public class ParseJSON {
 		
 		if (con == null) {
 			
+			System.out.println("insertProductsToTable - establishing connection");
 			connectToMySqlDB();
+		} else {
+			
+			System.out.println("insertProductsToTable - already connected");
+					
 		}
 		
 		Statement stmt = con.createStatement();
