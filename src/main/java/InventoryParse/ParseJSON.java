@@ -56,10 +56,12 @@ public class ParseJSON {
 
 				moveFile(absoluteFileName);
 
+				printAggregateStats();
+
 			} else {
 
-				//System.out.println("No file found, sleeping.");
-				
+				// System.out.println("No file found, sleeping.");
+
 				try {
 					TimeUnit.SECONDS.sleep(5);
 				} catch (InterruptedException e) {
@@ -87,7 +89,7 @@ public class ParseJSON {
 			}
 
 			System.out.println("Processing " + absoluteFileName.getName());
-			
+
 			break;
 
 		}
@@ -172,6 +174,9 @@ public class ParseJSON {
 		if (fileValidatyStatus == VALID_FILE) {
 
 			insertProductsToTable(products);
+
+			System.out.println("Completed " + absoluteFileName.getName());
+
 		}
 
 		// System.out.println("######## Closing " + absoluteFileName.getName());
@@ -185,33 +190,32 @@ public class ParseJSON {
 	private void insertProductsToTable(Collection<Product> products) throws SQLException {
 
 		Iterator<Product> iterator = products.iterator();
-		
+
 		if (con == null) {
-			
-			//System.out.println("insertProductsToTable - establishing connection");
+
+			// System.out.println("insertProductsToTable - establishing connection");
 			connectToMySqlDB();
 		} else {
-			
-			//System.out.println("insertProductsToTable - already connected");
-					
+
+			// System.out.println("insertProductsToTable - already connected");
+
 		}
-		
+
 		Statement stmt = con.createStatement();
 
 		while (iterator.hasNext()) {
 
 			Product product = iterator.next();
-			
+
 			String insertQuery = "INSERT INTO products (id, sku, description, category, price, location, qty) VALUES ('"
 					+ product.getId() + "', '" + product.getSku() + "', '" + product.getDescription() + "', '"
 					+ product.getCategory() + "', " + product.getPrice() + ", '" + product.getLocation() + "', "
 					+ product.getQty() + ")";
-			
-			//System.out.println("###############" + insertQuery);
-			
+
+			// System.out.println("###############" + insertQuery);
 
 			stmt.executeUpdate(insertQuery);
-			
+
 		}
 
 	}
@@ -219,17 +223,17 @@ public class ParseJSON {
 	private boolean isNewID(String id) throws SQLException {
 
 		boolean isNewID = true;
-		
+
 		if (con == null) {
-			
-			//System.out.println("isNewID - establishing connection");
+
+			// System.out.println("isNewID - establishing connection");
 			connectToMySqlDB();
 		} else {
-			
-			//System.out.println("isNewID - already connected");
-					
+
+			// System.out.println("isNewID - already connected");
+
 		}
-		
+
 		Statement stmt = con.createStatement();
 
 		ResultSet rs = stmt.executeQuery("select id from products");
@@ -238,8 +242,8 @@ public class ParseJSON {
 
 			String rsId = rs.getString(1);
 
-			//System.out.println("Test ID: " + id);
-			//System.out.println("Result Set ID: " + rsId);
+			// System.out.println("Test ID: " + id);
+			// System.out.println("Result Set ID: " + rsId);
 
 			if (rsId.equals(id)) {
 
@@ -283,16 +287,52 @@ public class ParseJSON {
 		File destinationFile = new File(destinationFileStr);
 		destinationFileStr = destinationFile.toString();
 
-		//System.out.println("Source: " + absoluteFileName.toString());
-		//System.out.println("Destination: " + destinationFileStr);
+		// System.out.println("Source: " + absoluteFileName.toString());
+		// System.out.println("Destination: " + destinationFileStr);
 
 		if (absoluteFileName.renameTo(new File(destinationFileStr))) {
-			//System.out.println("Moved to Processed Directory");
+			// System.out.println("Moved to Processed Directory");
 		} else if (destinationFile != null && destinationFile.exists()) {
-			//System.out.println("Already exists in: " + destinationFileStr);
+			// System.out.println("Already exists in: " + destinationFileStr);
 			absoluteFileName.delete();
 		} else {
-			//System.out.println("Unable to move to Processed Directory");
+			// System.out.println("Unable to move to Processed Directory");
+		}
+
+	}
+
+	private void printAggregateStats() throws SQLException {
+
+		Collection<InventoryStat> inventoryStats = new ArrayList<InventoryStat>();
+
+		if (con == null) {
+
+			// System.out.println("insertProductsToTable - establishing connection");
+			connectToMySqlDB();
+		} else {
+
+			// System.out.println("insertProductsToTable - already connected");
+
+		}
+
+		Statement stmt = con.createStatement();
+
+		ResultSet rs = stmt.executeQuery("select category, location, qty from products");
+
+		while (rs.next()) {
+
+			
+			
+			String category = rs.getString(1).split(">", 4)[2].trim();
+			String location = rs.getString(2);
+			int qty = rs.getInt(3);
+
+			System.out.println(category + "#####" + location + "########" + qty);
+
+			
+			InventoryStat inventoryStat = new InventoryStat(category, location, qty);
+			
+			inventoryStats.add(inventoryStat);
 		}
 
 	}
