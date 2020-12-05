@@ -88,7 +88,7 @@ public class ParseJSON {
 				throw new Exception("Invalid file found, please check input folder");
 			}
 
-			System.out.println("Processing " + absoluteFileName.getName());
+			System.out.println("\nProcessing " + absoluteFileName.getName());
 
 			break;
 
