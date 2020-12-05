@@ -12,9 +12,9 @@ package InventoryParse;
  * Move the file to a different folder after they have completed processing - DONE
  * Create database running in Docker - DONE
  * Connect Java App running in Docker to database - DONE
+ * Ensure that the same file is not processed twice - DONE
+ * Insert processed file into database - DONE
  * 
- * Ensure that the same file is not processed twice
- * Insert processed file into database
  * Print some statistics after each record import is completed successfully
  * Print an aggregate of L3 categories and total qty stock per store
  * If you requeue a file share output

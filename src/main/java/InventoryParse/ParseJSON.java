@@ -58,7 +58,8 @@ public class ParseJSON {
 
 			} else {
 
-				System.out.println("No file found, sleeping.");
+				//System.out.println("No file found, sleeping.");
+				
 				try {
 					TimeUnit.SECONDS.sleep(5);
 				} catch (InterruptedException e) {
@@ -85,7 +86,8 @@ public class ParseJSON {
 				throw new Exception("Invalid file found, please check input folder");
 			}
 
-			System.out.println("File found: " + absoluteFileName.toString());
+			System.out.println("Processing " + absoluteFileName.getName());
+			
 			break;
 
 		}
@@ -146,17 +148,23 @@ public class ParseJSON {
 
 			if (totalRecordcount.longValue() != transSumRecordcount.longValue()) {
 
+				System.out.println("Discarding " + absoluteFileName.getName() + ", incorrect recordcount");
+
 				fileValidatyStatus += RECORD_COUNT_MISMATCH;
 
 			}
 
 			if (totalQtysum.longValue() != transSumQtysum) {
 
+				System.out.println("Discarding " + absoluteFileName.getName() + ", incorrect qtysum");
+
 				fileValidatyStatus += QTY_COUNT_MISMATCH;
 
 			}
 
 		} else {
+
+			System.out.println("Skipped " + absoluteFileName.getName());
 
 			fileValidatyStatus = PREVIOUSLY_PROCESSED;
 		}
@@ -180,11 +188,11 @@ public class ParseJSON {
 		
 		if (con == null) {
 			
-			System.out.println("insertProductsToTable - establishing connection");
+			//System.out.println("insertProductsToTable - establishing connection");
 			connectToMySqlDB();
 		} else {
 			
-			System.out.println("insertProductsToTable - already connected");
+			//System.out.println("insertProductsToTable - already connected");
 					
 		}
 		
@@ -199,12 +207,10 @@ public class ParseJSON {
 					+ product.getCategory() + "', " + product.getPrice() + ", '" + product.getLocation() + "', "
 					+ product.getQty() + ")";
 			
-			System.out.println("###############" + insertQuery);
+			//System.out.println("###############" + insertQuery);
 			
 
-			int updateVal = stmt.executeUpdate(insertQuery);
-
-			System.out.println("ExecuteUpdate status: " + updateVal);
+			stmt.executeUpdate(insertQuery);
 			
 		}
 
@@ -216,11 +222,11 @@ public class ParseJSON {
 		
 		if (con == null) {
 			
-			System.out.println("isNewID - establishing connection");
+			//System.out.println("isNewID - establishing connection");
 			connectToMySqlDB();
 		} else {
 			
-			System.out.println("isNewID - already connected");
+			//System.out.println("isNewID - already connected");
 					
 		}
 		
@@ -232,8 +238,8 @@ public class ParseJSON {
 
 			String rsId = rs.getString(1);
 
-			System.out.println("Test ID: " + id);
-			System.out.println("Result Set ID: " + rsId);
+			//System.out.println("Test ID: " + id);
+			//System.out.println("Result Set ID: " + rsId);
 
 			if (rsId.equals(id)) {
 
