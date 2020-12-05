@@ -191,8 +191,8 @@ public class ParseJSON {
 			
 			String insertQuery = "INSERT INTO products (id, sku, description, category, price location, qty) VALUES ('"
 					+ product.getId() + "', '" + product.getSku() + "', '" + product.getDescription() + "', '"
-					+ product.getCategory() + "', '" + product.getPrice() + "', '" + product.getLocation() + "', '"
-					+ product.getQty() + "'";
+					+ product.getCategory() + "', " + product.getPrice() + ", '" + product.getLocation() + "', "
+					+ product.getQty() + ")";
 			
 			System.out.println("###############" + insertQuery);
 			
