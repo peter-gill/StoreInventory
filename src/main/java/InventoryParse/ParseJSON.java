@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
@@ -22,6 +26,7 @@ public class ParseJSON {
 	final static public int PREVIOUSLY_PROCESSED = 5;
 
 	private File inputFolder = null;
+	private Connection con = null;
 
 	public ParseJSON() {
 
@@ -40,7 +45,7 @@ public class ParseJSON {
 	public void findParseJSON() throws Exception {
 
 		connectToMySqlDB();
-		
+
 		for (;;) {
 
 			File absoluteFileName = findFile();
@@ -91,7 +96,7 @@ public class ParseJSON {
 	/*
 	 * Returns true if file is valid TODO: distinguish based on discard reason
 	 */
-	int validateJSON(File absoluteFileName) throws IOException, ParseException {
+	int validateJSON(File absoluteFileName) throws IOException, ParseException, SQLException {
 
 		int fileValidatyStatus = VALID_FILE;
 
@@ -106,40 +111,59 @@ public class ParseJSON {
 
 		JSONArray productsArray = (JSONArray) jo.get("products");
 
-		Long totalRecordcount = 0L;
-		Long totalQtysum = 0L;
-
-		for (int i = 0, size = productsArray.size(); i < size; i++) {
-
-			JSONObject objectInArray = (JSONObject) productsArray.get(i);
-
-			String sku = (String) objectInArray.get("sku");
-			String description = (String) objectInArray.get("description");
-			String category = (String) objectInArray.get("category");
-			Double price = ((Number) objectInArray.get("price")).doubleValue();
-			String location = (String) objectInArray.get("location");
-			Long qty = (Long) objectInArray.get("qty");
-
-			totalRecordcount += 1;
-			totalQtysum += qty;
-
-		}
-
 		JSONObject transSum = (JSONObject) jo.get("transmissionsummary");
 		String id = (String) transSum.get("id");
-		Long transSumRecordcount = (Long) transSum.get("recordcount");
-		Long transSumQtysum = (Long) transSum.get("qtysum");
 
-		if (totalRecordcount.longValue() != transSumRecordcount.longValue()) {
+		Collection<Product> products = new ArrayList<Product>();
 
-			fileValidatyStatus += RECORD_COUNT_MISMATCH;
+		if (isNewID(id)) {
 
+			Long transSumRecordcount = (Long) transSum.get("recordcount");
+			Long transSumQtysum = (Long) transSum.get("qtysum");
+
+			Long totalRecordcount = 0L;
+			Long totalQtysum = 0L;
+
+			for (int i = 0, size = productsArray.size(); i < size; i++) {
+
+				JSONObject objectInArray = (JSONObject) productsArray.get(i);
+
+				String sku = (String) objectInArray.get("sku");
+				String description = (String) objectInArray.get("description");
+				String category = (String) objectInArray.get("category");
+				Double price = ((Number) objectInArray.get("price")).doubleValue();
+				String location = (String) objectInArray.get("location");
+				Long qty = (Long) objectInArray.get("qty");
+
+				Product product = new Product(id, sku, description, category, price, location, qty);
+
+				products.add(product);
+
+				totalRecordcount += 1;
+				totalQtysum += qty;
+
+			}
+
+			if (totalRecordcount.longValue() != transSumRecordcount.longValue()) {
+
+				fileValidatyStatus += RECORD_COUNT_MISMATCH;
+
+			}
+
+			if (totalQtysum.longValue() != transSumQtysum) {
+
+				fileValidatyStatus += QTY_COUNT_MISMATCH;
+
+			}
+
+		} else {
+
+			fileValidatyStatus = PREVIOUSLY_PROCESSED;
 		}
 
-		if (totalQtysum.longValue() != transSumQtysum) {
+		if (fileValidatyStatus == VALID_FILE) {
 
-			fileValidatyStatus += QTY_COUNT_MISMATCH;
-
+			insertProductsToTable(products);
 		}
 
 		// System.out.println("######## Closing " + absoluteFileName.getName());
@@ -148,6 +172,50 @@ public class ParseJSON {
 
 		return fileValidatyStatus;
 
+	}
+
+	private void insertProductsToTable(Collection<Product> products) throws SQLException {
+
+		Iterator<Product> iterator = products.iterator();
+		Statement stmt = con.createStatement();
+
+		while (iterator.hasNext()) {
+
+			Product product = iterator.next();
+
+			stmt.executeQuery("INSERT INTO products (id, sku, description, category, price location, qty) VALUES ('"
+					+ product.getId() + "', '" + product.getSku() + "', '" + product.getDescription() + "', '"
+					+ product.getCategory() + "', '" + product.getPrice() + "', '" + product.getLocation() + "', '"
+					+ product.getQty() + "'");
+
+		}
+
+	}
+
+	private boolean isNewID(String id) throws SQLException {
+
+		boolean isNewID = true;
+
+		Statement stmt = con.createStatement();
+
+		ResultSet rs = stmt.executeQuery("select id from products");
+
+		while (rs.next()) {
+
+			String rsId = rs.getString(0);
+
+			System.out.println("Test ID: " + id);
+			System.out.println("Result Set ID: " + rsId);
+
+			if (rsId.equals(id)) {
+
+				isNewID = false;
+				break;
+			}
+
+		}
+
+		return isNewID;
 	}
 
 	/*
@@ -195,24 +263,21 @@ public class ParseJSON {
 
 	}
 
+	/*
+	 * mysql connection method TODO: change so connection details are passed in at
+	 * runtime
+	 */
 	private void connectToMySqlDB() {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			//Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/company?useSSL=false", "storeuser",
-			Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/company?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT&useSSL=false", "storeuser",
+			con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/company?useSSL=false", "storeuser",
 					"storeuser");
 
-			Statement stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery("show columns from products");
-			//ResultSet rs = stmt.executeQuery("select * from products");
-			while (rs.next())
-				//System.out.println(rs.getInt(1) + "  " + rs.getString(2) + "  " + rs.getString(3));
-				System.out.println(rs.getString(1));
-			con.close();
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+
 	}
 
 }
