@@ -216,9 +216,14 @@ public class ParseJSON {
 		
 		if (con == null) {
 			
+			System.out.println("isNewID - establishing connection");
 			connectToMySqlDB();
+		} else {
+			
+			System.out.println("isNewID - already connected");
+					
 		}
-
+		
 		Statement stmt = con.createStatement();
 
 		ResultSet rs = stmt.executeQuery("select id from products");
