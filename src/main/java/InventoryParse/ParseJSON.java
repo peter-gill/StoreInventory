@@ -177,6 +177,12 @@ public class ParseJSON {
 	private void insertProductsToTable(Collection<Product> products) throws SQLException {
 
 		Iterator<Product> iterator = products.iterator();
+		
+		if (con == null) {
+			
+			connectToMySqlDB();
+		}
+		
 		Statement stmt = con.createStatement();
 
 		while (iterator.hasNext()) {
@@ -195,6 +201,11 @@ public class ParseJSON {
 	private boolean isNewID(String id) throws SQLException {
 
 		boolean isNewID = true;
+		
+		if (con == null) {
+			
+			connectToMySqlDB();
+		}
 
 		Statement stmt = con.createStatement();
 
