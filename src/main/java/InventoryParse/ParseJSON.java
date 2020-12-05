@@ -56,8 +56,6 @@ public class ParseJSON {
 
 				moveFile(absoluteFileName);
 
-				printAggregateStats();
-
 			} else {
 
 				// System.out.println("No file found, sleeping.");
@@ -175,10 +173,15 @@ public class ParseJSON {
 
 			insertProductsToTable(products);
 
-			System.out.println("Completed " + absoluteFileName.getName());
-
 		}
 
+		if (fileValidatyStatus != PREVIOUSLY_PROCESSED) {
+
+			printAggregateStats();
+						
+		}
+		
+		
 		// System.out.println("######## Closing " + absoluteFileName.getName());
 
 		fileReader.close();
