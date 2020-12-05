@@ -230,7 +230,7 @@ public class ParseJSON {
 
 		while (rs.next()) {
 
-			String rsId = rs.getString(0);
+			String rsId = rs.getString(1);
 
 			System.out.println("Test ID: " + id);
 			System.out.println("Result Set ID: " + rsId);
