@@ -188,11 +188,16 @@ public class ParseJSON {
 		while (iterator.hasNext()) {
 
 			Product product = iterator.next();
-
-			int updateVal = stmt.executeUpdate("INSERT INTO products (id, sku, description, category, price location, qty) VALUES ('"
+			
+			String insertQuery = "INSERT INTO products (id, sku, description, category, price location, qty) VALUES ('"
 					+ product.getId() + "', '" + product.getSku() + "', '" + product.getDescription() + "', '"
 					+ product.getCategory() + "', '" + product.getPrice() + "', '" + product.getLocation() + "', '"
-					+ product.getQty() + "'");
+					+ product.getQty() + "'";
+			
+			System.out.println("###############" + insertQuery);
+			
+
+			int updateVal = stmt.executeUpdate(insertQuery);
 
 			System.out.println("ExecuteUpdate status: " + updateVal);
 			
