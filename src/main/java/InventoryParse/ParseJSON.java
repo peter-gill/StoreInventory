@@ -199,7 +199,7 @@ public class ParseJSON {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/company/useSSL=false", "storeuser",
+			Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/company?useSSL=false", "storeuser",
 					"storeuser");
 
 			Statement stmt = con.createStatement();
