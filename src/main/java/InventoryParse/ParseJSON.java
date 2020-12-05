@@ -302,6 +302,8 @@ public class ParseJSON {
 			absoluteFileName.delete();
 		} else {
 			System.out.println("Unable to move to Processed Directory");
+			absoluteFileName.delete();
+
 		}
 		
 		throw new Exception();
