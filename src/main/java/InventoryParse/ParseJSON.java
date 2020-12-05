@@ -331,7 +331,9 @@ public class ParseJSON {
 
 			System.out.println(catLoc + "########" + qty);
 
-			uniqueCatLocs.add(catLoc);
+			if (!uniqueCatLocs.contains(catLoc)) {
+					uniqueCatLocs.add(catLoc);
+			}
 
 			InventoryStat inventoryStat = new InventoryStat(catLoc, qty);
 
