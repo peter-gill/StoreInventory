@@ -189,7 +189,7 @@ public class ParseJSON {
 
 			Product product = iterator.next();
 			
-			String insertQuery = "INSERT INTO products (id, sku, description, category, price location, qty) VALUES ('"
+			String insertQuery = "INSERT INTO products (id, sku, description, category, price, location, qty) VALUES ('"
 					+ product.getId() + "', '" + product.getSku() + "', '" + product.getDescription() + "', '"
 					+ product.getCategory() + "', " + product.getPrice() + ", '" + product.getLocation() + "', "
 					+ product.getQty() + ")";
