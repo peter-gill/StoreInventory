@@ -2,22 +2,16 @@ package InventoryParse;
 
 public class InventoryStat {
 
-	private String productType = null;
-	private String location = null;
+	private String catLoc = null;
 	private int qty = 0;
 	
-	public InventoryStat(String productType, String location, int qty) {
-		this.productType = productType;
-		this.location = location;
+	public InventoryStat(String catLoc, int qty) {
+		this.catLoc = catLoc;
 		this.qty = qty;
 	}
 
-	public String getProductType() {
-		return productType;
-	}
-
-	public String getLocation() {
-		return location;
+	public String getCatLoc() {
+		return catLoc;
 	}
 
 	public int getQty() {

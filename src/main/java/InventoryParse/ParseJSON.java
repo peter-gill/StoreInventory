@@ -304,6 +304,7 @@ public class ParseJSON {
 	private void printAggregateStats() throws SQLException {
 
 		Collection<InventoryStat> inventoryStats = new ArrayList<InventoryStat>();
+		Collection<String> uniqueCatLocs = new ArrayList<String>();
 
 		if (con == null) {
 
@@ -321,18 +322,46 @@ public class ParseJSON {
 
 		while (rs.next()) {
 
-			
-			
 			String category = rs.getString(1).split(">", 4)[2].trim();
 			String location = rs.getString(2);
+
+			String catLoc = category + ">" + location;
+
 			int qty = rs.getInt(3);
 
-			System.out.println(category + "#####" + location + "########" + qty);
+			System.out.println(catLoc + "########" + qty);
 
-			
-			InventoryStat inventoryStat = new InventoryStat(category, location, qty);
-			
+			uniqueCatLocs.add(catLoc);
+
+			InventoryStat inventoryStat = new InventoryStat(catLoc, qty);
+
 			inventoryStats.add(inventoryStat);
+		}
+
+		Iterator<String> iteratorCL = uniqueCatLocs.iterator();
+
+		while (iteratorCL.hasNext()) {
+
+			String uniqueCatLoc = iteratorCL.next();
+			int qtyCumulative = 0;
+
+			Iterator<InventoryStat> iteratorIS = inventoryStats.iterator();
+
+			while (iteratorIS.hasNext()) {
+
+				InventoryStat inventoryStat = iteratorIS.next();
+				String iSCatLoc = inventoryStat.getCatLoc();
+
+				System.out.println("Unique CatLoc: " + uniqueCatLoc + " InventoryStat CatLoc: " + iSCatLoc);
+
+				if (uniqueCatLoc.equals(iSCatLoc)) {
+					qtyCumulative += inventoryStat.getQty();
+				}
+
+			}
+			
+			System.out.println("Unique CatLoc: " + uniqueCatLoc + " Aggregate Qty: " + qtyCumulative);
+
 		}
 
 	}
