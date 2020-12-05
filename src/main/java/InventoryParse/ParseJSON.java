@@ -283,16 +283,16 @@ public class ParseJSON {
 		File destinationFile = new File(destinationFileStr);
 		destinationFileStr = destinationFile.toString();
 
-		System.out.println("Source: " + absoluteFileName.toString());
-		System.out.println("Destination: " + destinationFileStr);
+		//System.out.println("Source: " + absoluteFileName.toString());
+		//System.out.println("Destination: " + destinationFileStr);
 
 		if (absoluteFileName.renameTo(new File(destinationFileStr))) {
-			System.out.println("Moved to Processed Directory");
+			//System.out.println("Moved to Processed Directory");
 		} else if (destinationFile != null && destinationFile.exists()) {
-			System.out.println("Already exists in: " + destinationFileStr);
+			//System.out.println("Already exists in: " + destinationFileStr);
 			absoluteFileName.delete();
 		} else {
-			System.out.println("Unable to move to Processed Directory");
+			//System.out.println("Unable to move to Processed Directory");
 		}
 
 	}
