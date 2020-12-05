@@ -329,7 +329,7 @@ public class ParseJSON {
 
 			int qty = rs.getInt(3);
 
-			System.out.println(catLoc + "########" + qty);
+			//System.out.println(catLoc + "########" + qty);
 
 			if (!uniqueCatLocs.contains(catLoc)) {
 					uniqueCatLocs.add(catLoc);
@@ -354,7 +354,7 @@ public class ParseJSON {
 				InventoryStat inventoryStat = iteratorIS.next();
 				String iSCatLoc = inventoryStat.getCatLoc();
 
-				System.out.println("Unique CatLoc: " + uniqueCatLoc + " InventoryStat CatLoc: " + iSCatLoc);
+				//System.out.println("Unique CatLoc: " + uniqueCatLoc + " InventoryStat CatLoc: " + iSCatLoc);
 
 				if (uniqueCatLoc.equals(iSCatLoc)) {
 					qtyCumulative += inventoryStat.getQty();
@@ -362,7 +362,7 @@ public class ParseJSON {
 
 			}
 			
-			System.out.println("Unique CatLoc: " + uniqueCatLoc + " Aggregate Qty: " + qtyCumulative);
+			System.out.println(uniqueCatLoc.replace(">", " - ") + " - " + qtyCumulative);
 
 		}
 
