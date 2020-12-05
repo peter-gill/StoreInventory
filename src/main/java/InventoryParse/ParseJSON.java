@@ -136,6 +136,8 @@ public class ParseJSON {
 
 		}
 
+		//System.out.println("######## Closing " + absoluteFileName.getName());
+
 		fileReader.close();
 
 		return fileValidatyStatus;
@@ -145,15 +147,23 @@ public class ParseJSON {
 	/*
 	 * Moves JSON from input directory to processed directory
 	 */
-	private void moveFile(File absoluteFileName) {
+	private void moveFile(File absoluteFileName) throws Exception {
 
-		File parentFolder = (absoluteFileName.getParentFile());
+		// System.out.println("Method moveFile, absoluteFileName: " +
+		// absoluteFileName.toString());
+
+		File parentFolder = (absoluteFileName.getParentFile().getParentFile());
 
 		String processedFolderStr = parentFolder.toString() + "/processed-folder";
 
 		File processedFolder = new File(processedFolderStr);
 
+		// System.out.println("Method moveFile, processedFolder: " +
+		// processedFolder.toString());
+
 		if (!processedFolder.exists()) {
+
+			// System.out.println("Method moveFile, making processedFolder");
 
 			processedFolder.mkdir();
 
@@ -168,8 +178,11 @@ public class ParseJSON {
 		System.out.println("Source: " + absoluteFileName.toString());
 		System.out.println("Destination: " + destinationFileStr);
 
-		if (absoluteFileName.renameTo(new File(destinationFileStr)) && absoluteFileName.delete()) {
+		if (absoluteFileName.renameTo(new File(destinationFileStr))) {
 			System.out.println("Moved to Processed Directory");
+		} else if (destinationFile != null && destinationFile.exists()) {
+			System.out.println("Already exists in: " + destinationFileStr);
+			absoluteFileName.delete();
 		} else {
 			System.out.println("Unable to move to Processed Directory");
 		}

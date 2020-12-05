@@ -9,14 +9,14 @@ package InventoryParse;
  * Implement "Discard" functionality - DONE
  * Dockerize Java App - DONE
  * Add unit tests - DONE
+ * Move the file to a different folder after they have completed processing - DONE
+ * Create database running in Docker DONE
  * 
- * Create database running in Docker
  * Connect Java App running in Docker to database
  * Insert processed file into database
  * Print some statistics after each record import is completed successfully
  * Print an aggregate of L3 categories and total qty stock per store
  * Ensure that the same file is not processed twice
- * Move the file to a different folder after they have completed processing
  * If you requeue a file share output
  * Ensure we can pass the folder names into the container
  * Write a SQL query to calculate the stats
