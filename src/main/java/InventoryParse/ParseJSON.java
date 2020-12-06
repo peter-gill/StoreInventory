@@ -152,6 +152,12 @@ public class ParseJSON {
 
 				System.out.println("Discarding " + absoluteFileName.getName() + ", incorrect recordcount");
 
+				Product product = new Product(id, "", "", "", 0.0, "", 0L);
+
+				products.clear();
+				
+				products.add(product);
+				
 				fileValidatyStatus += RECORD_COUNT_MISMATCH;
 
 			}
@@ -160,6 +166,12 @@ public class ParseJSON {
 
 				System.out.println("Discarding " + absoluteFileName.getName() + ", incorrect qtysum");
 
+				Product product = new Product(id, "", "", "", 0.0, "", 0L);
+
+				products.clear();
+				
+				products.add(product);
+				
 				fileValidatyStatus += QTY_COUNT_MISMATCH;
 
 			}
