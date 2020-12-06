@@ -3,6 +3,8 @@ package InventoryParse;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -295,6 +297,10 @@ public class ParseJSON {
 		System.out.println("Source: " + absoluteFileName.toString());
 		System.out.println("Destination: " + destinationFileStr);
 
+		Files.copy(absoluteFileName.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+		
+		/*
 		if (absoluteFileName.renameTo(new File(destinationFileStr))) {
 			System.out.println("Moved to Processed Directory");
 		} else if (destinationFile != null && destinationFile.exists()) {
@@ -302,12 +308,10 @@ public class ParseJSON {
 			absoluteFileName.delete();
 		} else {
 			System.out.println("Unable to move to Processed Directory");
-			absoluteFileName.delete();
-
 		}
 		
 		throw new Exception();
-
+		 */
 	}
 
 	private void printAggregateStats() throws SQLException {
