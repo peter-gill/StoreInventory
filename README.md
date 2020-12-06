@@ -5,8 +5,11 @@ Run to this -
 1. Build and run mysql docker image.
 
 Location:   peter-gill/StoreInventory/my-mysql/Dockerfile
+
             peter-gill/StoreInventory/my-mysql/sql-scripts/CreateTable.sql
+            
 Build cmd:  docker build -t my-mysql .
+
 Run cmd:    docker run -d -p 3306:3306 --name my-mysql  my-mysql
 
 
