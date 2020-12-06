@@ -27,7 +27,7 @@ Location:
 Build cmd:  
 
             docker build -t store-inventory .
-Run cmd:
+Run cmd (example):
 
             docker container run -it --volume /Users/pgill/workspace/input-folder:/home/storeuser/input-folder --volume /Users/pgill/workspace/processed-folder:/home/storeuser/processed-folder --network "host" store-inventory
 
