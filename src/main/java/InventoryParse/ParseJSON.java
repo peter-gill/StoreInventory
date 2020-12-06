@@ -412,7 +412,7 @@ public class ParseJSON {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/company?allowPublicKeyRetrieval=ture&useSSL=false", "storeuser",
+			con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/company?allowPublicKeyRetrieval=true&useSSL=false", "storeuser",
 					"storeuser");
 
 		} catch (Exception e) {
