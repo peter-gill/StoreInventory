@@ -12,5 +12,4 @@ RUN mkdir /home/storeuser/input-folder
 RUN mkdir /home/storeuser/processed-folder
 RUN git clone https://github.com/peter-gill/StoreInventory
 WORKDIR /home/storeuser/StoreInventory
-RUN mvn package
-RUN java -jar /home/storeuser/StoreInventory/target/StoreInventory-0.0.1-SNAPSHOT-jar-with-dependencies.jar /home/storeuser/input-folder
+RUN mvn package  -Dmaven.test.skip=true
