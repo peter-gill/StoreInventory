@@ -191,7 +191,7 @@ public class ParseJSON {
 
 		if (fileValidatyStatus != PREVIOUSLY_PROCESSED) {
 
-			if (fileValidatyStatus != QTY_COUNT_MISMATCH || fileValidatyStatus != RECORD_COUNT_MISMATCH) {
+			if (fileValidatyStatus != QTY_COUNT_MISMATCH && fileValidatyStatus != RECORD_COUNT_MISMATCH) {
 				System.out.println("Completed " + absoluteFileName.getName());
 			}
 
