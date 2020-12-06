@@ -405,4 +405,26 @@ public class ParseJSON {
 
 	}
 
+	/*
+	 * Delete data from table
+	 */
+	public void cleanTable() throws SQLException {
+		
+		if (con == null) {
+
+			// System.out.println("insertProductsToTable - establishing connection");
+			connectToMySqlDB();
+		} else {
+
+			// System.out.println("insertProductsToTable - already connected");
+
+		}
+
+		Statement stmt = con.createStatement();
+		
+		String insertQuery = "DELETE FROM products;";
+
+		stmt.executeUpdate(insertQuery);
+		
+	}
 }

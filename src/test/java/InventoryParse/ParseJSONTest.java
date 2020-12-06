@@ -26,6 +26,8 @@ public class ParseJSONTest {
 
 		assertEquals(ParseJSON.VALID_FILE, fileValidatyStatus);
 
+		parseJSON.cleanTable();
+
 	}
 
 	@Test
@@ -44,6 +46,8 @@ public class ParseJSONTest {
 
 		assertEquals(ParseJSON.RECORD_COUNT_MISMATCH, fileValidatyStatus);
 
+		parseJSON.cleanTable();
+
 	}
 
 	@Test
@@ -61,6 +65,8 @@ public class ParseJSONTest {
 		}
 
 		assertEquals(ParseJSON.QTY_COUNT_MISMATCH, fileValidatyStatus);
+
+		parseJSON.cleanTable();
 
 	}
 
