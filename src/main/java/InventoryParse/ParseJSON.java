@@ -335,7 +335,13 @@ public class ParseJSON {
 
 		while (rs.next()) {
 
-			String category = rs.getString(1).split(">", 4)[2].trim();
+			String [] catLocs = rs.getString(1).split(">", 4);
+			
+			if (catLocs.length == 1) {
+				continue;
+			}
+			
+			String category = catLocs[2].trim();
 			String location = rs.getString(2);
 
 			String catLoc = category + ">" + location;
