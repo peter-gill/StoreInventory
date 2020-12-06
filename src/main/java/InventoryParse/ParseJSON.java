@@ -298,7 +298,7 @@ public class ParseJSON {
 		System.out.println("Destination: " + destinationFileStr);
 
 		Files.copy(absoluteFileName.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
+		Files.delete(absoluteFileName.toPath());
 		
 		/*
 		if (absoluteFileName.renameTo(new File(destinationFileStr))) {
@@ -309,9 +309,9 @@ public class ParseJSON {
 		} else {
 			System.out.println("Unable to move to Processed Directory");
 		}
+		 */
 		
 		throw new Exception();
-		 */
 	}
 
 	private void printAggregateStats() throws SQLException {
