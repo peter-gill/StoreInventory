@@ -183,7 +183,7 @@ public class ParseJSON {
 			fileValidatyStatus = PREVIOUSLY_PROCESSED;
 		}
 
-		if (fileValidatyStatus == VALID_FILE) {
+		if (fileValidatyStatus == VALID_FILE || fileValidatyStatus == RECORD_COUNT_MISMATCH || fileValidatyStatus == QTY_COUNT_MISMATCH) {
 
 			insertProductsToTable(products);
 
