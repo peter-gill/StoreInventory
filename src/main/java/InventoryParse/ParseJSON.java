@@ -20,6 +20,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+
+/*
+ * ParseJSON: Class that parses JSON files and inserts into mysql DB 
+ */
 public class ParseJSON {
 
 	final static public int VALID_FILE = 0;
@@ -44,6 +48,9 @@ public class ParseJSON {
 		}
 	}
 
+	/*
+	 * findParseJSON: Waits until it finds JSON to parse 
+	 */
 	public void findParseJSON() throws Exception {
 
 		connectToMySqlDB();
@@ -74,7 +81,7 @@ public class ParseJSON {
 	}
 
 	/*
-	 * Returns a file or null if no file exists
+	 * findFile: Returns a file or null if no file exists
 	 */
 	private File findFile() throws Exception {
 
@@ -98,7 +105,7 @@ public class ParseJSON {
 	}
 
 	/*
-	 * Returns true if file is valid TODO: distinguish based on discard reason
+	 * validateJSON: Parses a JSON file and inserts into mysql table. Also deals with invalidate data cases.
 	 */
 	int validateJSON(File absoluteFileName) throws IOException, ParseException, SQLException {
 
@@ -314,6 +321,14 @@ public class ParseJSON {
 		Files.delete(absoluteFileName.toPath());
 	}
 
+	/*
+	 * printAggregateStats: Prints aggregated stats. It uses two collections to achieve this.
+	 * 						The first collection captures unique Category and Locations. The
+	 * 						second collection contains all the data from the products table.
+	 * 						The first collection is then iterated on and for each unique
+	 * 						Category, Location pair the Qty value is incremented based on matches
+	 * 						in the second collection.   
+	 */
 	private void printAggregateStats() throws SQLException {
 
 		Collection<InventoryStat> inventoryStats = new ArrayList<InventoryStat>();
@@ -389,8 +404,9 @@ public class ParseJSON {
 	}
 
 	/*
-	 * mysql connection method TODO: change so connection details are passed in at
-	 * runtime
+	 * mysql connection method
+	 * 
+	 * TODO: change so connection details are passed in at runtime, possibly using Azure key vault.
 	 */
 	private void connectToMySqlDB() {
 
