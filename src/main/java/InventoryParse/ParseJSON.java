@@ -406,13 +406,13 @@ public class ParseJSON {
 	/*
 	 * mysql connection method
 	 * 
-	 * TODO: change so connection details are passed in at runtime, possibly using Azure key vault.
+	 * TODO: change so connection details are passed in at runtime, possibly using Azure key vault. Also need to set-up ssl, it's ok for now as this is dev.
 	 */
 	private void connectToMySqlDB() {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/company?useSSL=false", "storeuser",
+			con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/company?allowPublicKeyRetrieval=ture&useSSL=false", "storeuser",
 					"storeuser");
 
 		} catch (Exception e) {
