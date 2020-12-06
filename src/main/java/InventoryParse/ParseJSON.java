@@ -155,9 +155,9 @@ public class ParseJSON {
 				Product product = new Product(id, "", "", "", 0.0, "", 0L);
 
 				products.clear();
-				
+
 				products.add(product);
-				
+
 				fileValidatyStatus += RECORD_COUNT_MISMATCH;
 
 			}
@@ -169,9 +169,9 @@ public class ParseJSON {
 				Product product = new Product(id, "", "", "", 0.0, "", 0L);
 
 				products.clear();
-				
+
 				products.add(product);
-				
+
 				fileValidatyStatus += QTY_COUNT_MISMATCH;
 
 			}
@@ -191,13 +191,14 @@ public class ParseJSON {
 
 		if (fileValidatyStatus != PREVIOUSLY_PROCESSED) {
 
-			System.out.println("Completed " + absoluteFileName.getName());
+			if (fileValidatyStatus != QTY_COUNT_MISMATCH || fileValidatyStatus != RECORD_COUNT_MISMATCH) {
+				System.out.println("Completed " + absoluteFileName.getName());
+			}
 
 			printAggregateStats();
-						
+
 		}
-		
-		
+
 		// System.out.println("######## Closing " + absoluteFileName.getName());
 
 		fileReader.close();
@@ -306,8 +307,8 @@ public class ParseJSON {
 		File destinationFile = new File(destinationFileStr);
 		destinationFileStr = destinationFile.toString();
 
-		//System.out.println("Source: " + absoluteFileName.toString());
-		//System.out.println("Destination: " + destinationFileStr);
+		// System.out.println("Source: " + absoluteFileName.toString());
+		// System.out.println("Destination: " + destinationFileStr);
 
 		Files.copy(absoluteFileName.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		Files.delete(absoluteFileName.toPath());
@@ -341,10 +342,10 @@ public class ParseJSON {
 
 			int qty = rs.getInt(3);
 
-			//System.out.println(catLoc + "########" + qty);
+			// System.out.println(catLoc + "########" + qty);
 
 			if (!uniqueCatLocs.contains(catLoc)) {
-					uniqueCatLocs.add(catLoc);
+				uniqueCatLocs.add(catLoc);
 			}
 
 			InventoryStat inventoryStat = new InventoryStat(catLoc, qty);
@@ -366,14 +367,15 @@ public class ParseJSON {
 				InventoryStat inventoryStat = iteratorIS.next();
 				String iSCatLoc = inventoryStat.getCatLoc();
 
-				//System.out.println("Unique CatLoc: " + uniqueCatLoc + " InventoryStat CatLoc: " + iSCatLoc);
+				// System.out.println("Unique CatLoc: " + uniqueCatLoc + " InventoryStat CatLoc:
+				// " + iSCatLoc);
 
 				if (uniqueCatLoc.equals(iSCatLoc)) {
 					qtyCumulative += inventoryStat.getQty();
 				}
 
 			}
-			
+
 			System.out.println(uniqueCatLoc.replace(">", " - ") + " - " + qtyCumulative);
 
 		}
